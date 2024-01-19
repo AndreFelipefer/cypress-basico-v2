@@ -227,5 +227,124 @@ describe('Central de Atendimento ao Cliente TAT', function () {
     /*----------------------- AULA 09 -----------------------*/
     // Documentação do projeto
 
+    /*----------------------- AULA 10 -----------------------*/
+    /* Comando GIT pare reverter alteração que subiu para Main 
+    - Git log 
+    - Git revert <sua_Hash_aqui>
+    - Git push origin main --force
+    - Git push origin main
+    */
+
+    /*----------------------- AULA 11 -----------------------*/
+    //Error com campos obrigatorios em brancos
+    it('exibe mensagem por 3 segundos', function() {
+        cy.clock() // congela o relógio do navegador
+        cy.get('.button').click()
+        cy.get('.error').should('be.visible');
+        cy.tick(3000) // avança o relógio três segundos (em milissegundos). Avanço este tempo para não perdê-lo esperando.
+        .should('have.value', '')
+    })
+    
+    // Sucesso com campos obrigatorios preenchidos
+    it('exibe mensagem por 3 segundos', function() {
+        cy.clock() // congela o relógio do navegador
+        const longText = 'teste, teste, teste, teste, teste, test, teste, teste, test';
+        cy.get('#firstName').type('André');
+        cy.get('#lastName').type('Ferreira');
+        cy.get('#email').type('Andre_felipefer@Hotmail.com');
+        cy.get('#open-text-area').type(longText, { delay: 0 });
+        cy.get('.button').click()
+        cy.get('.success').should('be.visible')
+        cy.tick(3000) // avança o relógio três segundos (em milissegundos). Avanço este tempo para não perdê-lo esperando.
+        cy.get('.success').should('not.be.visible');
+        
+    })
+
+    // Exercício extra 02
+    it('exibe e esconde as mensagens de sucesso e erro usando o .invoke()', function(){
+        cy.get('#firstName').type('André')
+        cy.get('#lastName').type('Felipe')
+        cy.get('#email').type('Andre_felipefer@Hotmail.com')
+        cy.get('#open-text-area').type('Validacao')
+        cy.get('.button').click()
+        cy.contains('Mensagem enviada com sucesso').should('be.visible')
+        .invoke('show')
+        cy.get('.button').click()
+        cy.get('.error').should('be.visible')
+        .and('contain', 'Valide os campos obrigatórios!')
+        .invoke('hide')
+        
+    })
+    // Exercício extra 02
+    it('exibe e esconde as mensagens de sucesso e erro usando o .invoke', () => {
+        cy.get('.success')
+          .should('not.be.visible')
+          .invoke('show')
+          .should('be.visible')
+          .and('contain', 'Mensagem enviada com sucesso.')
+          .invoke('hide')
+          .should('not.be.visible')
+        cy.get('.error')
+          .should('not.be.visible')
+          .invoke('show')
+          .should('be.visible')
+          .and('contain', 'Valide os campos obrigatórios!')
+          .invoke('hide')
+          .should('not.be.visible')
+      })
+
+      // Exercício extra 03
+      it('preenche a área de texto usando o comando invoke', function () {
+        const longText = Cypress._.repeat('0123456', 20);
+      
+        cy.get('#open-text-area')
+        .invoke('val', longText) 
+        .should('have.value', longText) 
+                  
+      });
+      
+    // Exercício extra 04
+    it('faz uma requisição HTTP', function(){
+        cy.request('https://cac-tat.s3.eu-central-1.amazonaws.com/index.html')
+        .should(function(response){
+            const { status, statusText, body} = response
+            expect(status).to.equal(200)
+            expect(statusText).to.equal('OK')
+            expect(body).to.include('CAC TAT')
+        })
+        
+
+    })
+
+    /*----------------------- AULA 12 -----------------------*/
+    // Modelo 01 
+    it('Ache o gato', function(){
+        cy.request('https://cac-tat.s3.eu-central-1.amazonaws.com/index.html')
+        .should(function(response){
+        const {body} = response
+        expect(body).to.include('🐈')
+        })
+    })
+
+    // Modelo 02
+    it('Ache o gato', function(){
+        cy.get('#cat')
+        .invoke('show')
+        .should('be.visible')
+    })
+
+    // Modelo 03 
+    it.only('encontra o gato escondido', function(){
+        cy.get('#cat')
+        .invoke('show')
+        .should('be.visible')
+        cy.get('#title')
+        .invoke('text','CAT TAT')
+        cy.get('#subtitle')
+        .invoke('text','Eu ♥ Gatos!!')
+    })
+
+
+    // FIM Cypress - Basico 
     
 });
